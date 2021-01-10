@@ -1,0 +1,124 @@
+Sub Vba_Hw()
+
+Dim Ticker
+Dim YearlyChange
+Dim PercentChange
+Dim TotalStockVolume As Double
+Dim OpenPrice
+Dim ClosePrice
+Dim SummaryTableRow
+Dim YearStart
+Dim wsCount As Integer
+
+
+wsCount = ActiveWorkbook.Worksheets.Count
+
+For ws = 1 To wsCount
+
+    Worksheets(ws).Range("I1") = "Ticker"
+    Worksheets(ws).Range("J1") = "Yearly Change"
+    Worksheets(ws).Range("K1") = "Percent Change"
+    Worksheets(ws).Range("L1") = "Total Stock Volume"
+    
+
+    SummaryTableRow = 2
+
+    For i = 2 To Worksheets(ws).Cells(Rows.Count, 1).End(xlUp).Row
+
+        Ticker = Worksheets(ws).Cells(i, 1)
+        TotalStockVolume = TotalStockVolume + Cells(i, 7)
+
+        If OpenPrice = "" Then
+            OpenPrice = Worksheets(ws).Cells(i, 3)
+        End If
+   
+        If Ticker <> Worksheets(ws).Cells((i + 1), 1) Then
+        
+ 
+        ClosePrice = Worksheets(ws).Cells(i, 6)
+ 
+        YearlyChange = OpenPrice - ClosePrice
+
+        Worksheets(ws).Range("I" & SummaryTableRow).Value = Ticker
+        Worksheets(ws).Range("J" & SummaryTableRow).Value = YearlyChange
+        
+        If YearlyChange > 0 Then
+        Worksheets(ws).Range("J" & SummaryTableRow).Interior.ColorIndex = 4
+        Else
+        Worksheets(ws).Range("J" & SummaryTableRow).Interior.ColorIndex = 3
+        End If
+        
+        If startPrice <> ClosePrice Then
+            PercentChange = YearlyChange / ClosePrice
+        Else
+            PercentChange = 0
+        End If
+        Worksheets(ws).Range("K" & SummaryTableRow).Value = PercentChange
+        Worksheets(ws).Range("K" & SummaryTableRow).NumberFormat = "0.00%"
+        
+       
+        Worksheets(ws).Range("L" & SummaryTableRow).Value = TotalStockVolume
+        
+       
+        
+        SummaryTableRow = SummaryTableRow + 1
+        TotalStockVolume = 0
+        
+        End If
+        
+      
+    Next i
+  
+
+    Worksheets(ws).Cells(2, 15).Value = "Greatest % Increase"
+    Worksheets(ws).Cells(3, 15).Value = "Greatest % Decrease"
+    Worksheets(ws).Cells(4, 15).Value = "Greatest Total Volume"
+    Worksheets(ws).Cells(1, 16).Value = "Ticker"
+    Worksheets(ws).Cells(1, 17).Value = "Value"
+    
+    lastrow = Worksheets(ws).Cells(Rows.Count, 9).End(xlUp).Row
+    
+
+    Dim best_stock As String
+    Dim best_value As Double
+    best_value = Worksheets(ws).Cells(2, 11).Value
+    
+    Dim worst_stock As String
+    Dim worst_value As Double
+    worst_value = Worksheets(ws).Cells(2, 11).Value
+    
+    Dim most_vol_stock As String
+    Dim most_vol_value As Double
+    most_vol_value = Worksheets(ws).Cells(2, 12).Value
+    
+    For o = 2 To lastrow
+        If Worksheets(ws).Cells(o, 11).Value > best_value Then
+        best_value = Worksheets(ws).Cells(o, 11).Value
+        best_stock = Worksheets(ws).Cells(o, 9).Value
+        End If
+        If Worksheets(ws).Cells(o, 11).Value < worst_value Then
+        worst_value = Worksheets(ws).Cells(o, 11).Value
+        worst_stock = Worksheets(ws).Cells(o, 9).Value
+        End If
+        If Worksheets(ws).Cells(o, 12).Value > most_vol_value Then
+        most_vol_value = Worksheets(ws).Cells(o, 12).Value
+        most_vol_stock = Worksheets(ws).Cells(o, 9).Value
+        End If
+        'Move all data to performance table
+        Worksheets(ws).Cells(2, 16).Value = best_stock
+        Worksheets(ws).Cells(2, 17).Value = best_value
+        Worksheets(ws).Cells(2, 17).NumberFormat = "0.00%"
+        Worksheets(ws).Cells(3, 16).Value = worst_stock
+        Worksheets(ws).Cells(3, 17).Value = worst_value
+        Worksheets(ws).Cells(3, 17).NumberFormat = "0.00%"
+        Worksheets(ws).Cells(4, 16).Value = most_vol_stock
+        Worksheets(ws).Cells(4, 17).Value = most_vol_value
+        Worksheets(ws).Columns("I:L").EntireColumn.AutoFit
+        Worksheets(ws).Columns("O:Q").EntireColumn.AutoFit
+    Next o
+  
+  
+Next ws
+
+
+End Sub
